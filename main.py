@@ -159,32 +159,27 @@ elif selected == "Causal Discovery":
                 img = Image.open('pag.png')
                 st.image(img)
 
-                node_to_index = {node: index for index, node in enumerate(nodes)}
-
-                edges_with_labels = []
-
+                st.write("Edges detected by FCI:")
+                symbol_to_description = {
+                "-->": "A is a cause of B",
+                "o-o": "No set d-separates A and B.",
+                "o->": "B is not an ancestor of A",
+                "<->": "There is a latent common cause of A and B."
+                }
                 for edge in edges:
-                	start_node = edge.get_node1()
-                	end_node = edge.get_node2()  
+                	edge_str = str(edge)
+                	if "o-o" in edge_str:
+                		description = symbol_to_description["o-o"]
+                	elif "o->" in edge_str:
+                		description = symbol_to_description["o->"]
+                	elif "-->" in edge_str:
+                		description = symbol_to_description["-->"]
+                	elif "<->" in edge_str:
+                		description = symbol_to_description["<->"]
+                	else:
+                		description = "Tidak ada relasi."
 
-                	start_index = node_to_index[start_node]
-                	end_index = node_to_index[end_node]
-
-                	start_label = column_labels[start_index]
-                	end_label = column_labels[end_index]
-                	edges_with_labels.append((start_label, end_label))
-
-                	st.write("Edges detected by FCI with original labels:")
-                	symbol_to_description = {
-                	"-->": "A is a cause of B",
-                	"o-o": "No set d-separates A and B.",
-                	"o->": "B is not an ancestor of A",
-                	"<->": "There is a latent common cause of A and B."
-                	}
-
-                	for start_label, end_label in edges_with_labels:
-                		description = symbol_to_description.get("-->", "Tidak ada relasi.")
-                		st.write(f"Edge: {start_label} --> {end_label}, Description: {description}")
+                	st.write(f"Edge: {edge_str}, Description: {description}")
             else:
             	st.error("No data available. Please upload or fetch data in the Dataset section.")
     with st.expander('Penjelasan Edges'):
